@@ -1,0 +1,14 @@
+---批量更新某服务器除某几个数据库之外的其他数据库，将companies表中的dbserver字段更新为 192.168.1.6
+DECLARE @sql AS NVARCHAR(300) 
+DECLARE @name AS NVARCHAR(30) 
+DECLARE c CURSOR FAST_FORWARD FOR SELECT NAME FROM sys.databases WHERE name not in('master','model','msdb','tempdb','StrategyDBCompany','condenastHR','ReportServer')
+OPEN c 
+FETCH NEXT FROM  C INTO @name; 
+WHILE @@FETCH_STATUS = 0 
+BEGIN 
+SET @sql = 'USE' +  quotename(@name) + 'update companies set dbserver=''192.168.1.6'''; 
+EXEC(@sql); 
+FETCH NEXT FROM c INTO @name; 
+END 
+CLOSE c; 
+DEALLOCATE c; 
